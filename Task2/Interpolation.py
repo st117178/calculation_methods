@@ -32,6 +32,9 @@ class Interpolation:
     def polynom_lagrange(self, *, x: float):
         xk_table = self.sorted_x(x=x)
         Pn_x = 0
+        sum_coefficients = 0
+        lebesgue_value = 0
+
         for i in range(self.n + 1):
             Li_x = 1
             for j in range(self.n + 1):
@@ -39,6 +42,11 @@ class Interpolation:
                     continue
                 Li_x *= (x - xk_table[j])/(xk_table[i] - xk_table[j])
             Pn_x += self.get_f_zk(zk=xk_table[i]) * Li_x
+            sum_coefficients += Li_x
+            lebesgue_value += abs(Li_x)
+
+        print(f"\nСумма коэффициентов Лагранжа: {sum_coefficients:.12f}")
+        print(f"Значение функции Лебега в точке x: {lebesgue_value:.12f}")
 
         return Pn_x
     
@@ -60,7 +68,10 @@ class Interpolation:
             res_diffs.append(current_level)
 
         coefficients = [level[0] for level in res_diffs]
-        
+        print("\nРазделенные разности (коэффициенты многочлена Ньютона):")
+        for i, coef in enumerate(coefficients):
+            print(f"f(x0...x{i}) = {coef:.12f}")
+            
         pn_x = coefficients[0]
         product_term = 1
         
