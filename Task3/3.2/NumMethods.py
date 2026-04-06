@@ -21,27 +21,30 @@ class NumericalMethods:
         return df
 
     def get_first_derivative_oh4(self):
-        df = [0.0] * (self.m + 1)
-        h = self.h
-        y = self.y
-        
-        if self.m < 4:
-            raise ValueError("Для порядка O(h^4) требуется не менее 5 узлов (m >= 4)")
+            if self.m < 4:
+                return [None] * (self.m + 1)
 
-        for k in range(self.m + 1):
-            if k == 0:
-                df[k] = (-25*y[0] + 48*y[1] - 36*y[2] + 16*y[3] - 3*y[4]) / (12 * h)
-            elif k == 1:
-                df[k] = (-3*y[0] - 10*y[1] + 18*y[2] - 6*y[3] + y[4]) / (12 * h)
-            elif 2 <= k <= self.m - 2:
-                df[k] = (y[k-2] - 8*y[k-1] + 8*y[k+1] - y[k+2]) / (12 * h)
-            elif k == self.m - 1:
-                df[k] = (3*y[self.m] + 10*y[self.m-1] - 18*y[self.m-2] + 6*y[self.m-3] - y[self.m-4]) / (12 * h)
-            elif k == self.m:
-                df[k] = (25*y[self.m] - 48*y[self.m-1] + 36*y[self.m-2] - 16*y[self.m-3] + 3*y[self.m-4]) / (12 * h)
-        return df
+            df = [0.0] * (self.m + 1)
+            h = self.h
+            y = self.y
+            
+            for k in range(self.m + 1):
+                if k == 0:
+                    df[k] = (-25*y[0] + 48*y[1] - 36*y[2] + 16*y[3] - 3*y[4]) / (12 * h)
+                elif k == 1:
+                    df[k] = (-3*y[0] - 10*y[1] + 18*y[2] - 6*y[3] + y[4]) / (12 * h)
+                elif 2 <= k <= self.m - 2:
+                    df[k] = (y[k-2] - 8*y[k-1] + 8*y[k+1] - y[k+2]) / (12 * h)
+                elif k == self.m - 1:
+                    df[k] = (3*y[self.m] + 10*y[self.m-1] - 18*y[self.m-2] + 6*y[self.m-3] - y[self.m-4]) / (12 * h)
+                elif k == self.m:
+                    df[k] = (25*y[self.m] - 48*y[self.m-1] + 36*y[self.m-2] - 16*y[self.m-3] + 3*y[self.m-4]) / (12 * h)
+            return df
 
     def get_second_derivative_oh2(self):
+        if self.m < 3:
+            return [None] * (self.m + 1)
+        
         ddf = [0.0] * (self.m + 1)
         h2 = self.h ** 2
         y = self.y
@@ -62,7 +65,7 @@ class NumericalMethods:
 
         exact_df = func_obj.df(x_point)
         
-        for i in range(15):
+        for _ in range(100):
             y0 = round(func_obj.f(x_point), 5)
             yh = round(func_obj.f(x_point + h), 5)
             y2h = round(func_obj.f(x_point + 2*h), 5)

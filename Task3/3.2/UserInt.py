@@ -18,26 +18,32 @@ class UserInterface:
             if choice == '0': break
             
             try:
-                selected_func = self.functions[int(choice)-1]
-                self.process_function(selected_func)
-            except (ValueError, IndexError):
-                print("Ошибка: выберите число из списка.")
+                idx = int(choice) - 1
+                if 0 <= idx < len(self.functions):
+                    self.process_function(self.functions[idx])
+                else:
+                    print("\nОшибка: выберите корректный номер из списка.")
+            except ValueError:
+                print("\nОшибка: введите число.")
 
     def process_function(self, func):
         while True:
-            print(f"\n--- Работа с функцией: {func.name} ---")
+            print(f"\nРабота с функцией: {func.name}")
             print("Введите 'b' для возврата в главное меню.")
             
             user_input = input("Введите x0, h, m (через пробел): ")
             if user_input.lower() == 'b': return
+            
             try:
-                x0, h, m = map(float, user_input.split())
-                m = int(m)
-                if m < 4:
-                    print("Ошибка: m должно быть >= 4 для корректного расчета O(h^4).")
+                parts = user_input.split()
+                if len(parts) != 3: continue
+                x0, h, m = float(parts[0]), float(parts[1]), int(parts[2])
+                
+                if m < 2:
+                    print("Ошибка: m должно быть >= 2 для расчета хотя бы O(h^2).")
                     continue
             except ValueError:
-                print("Ошибка ввода. Ожидается: [число] [число] [целое число]"); continue
+                print("Ошибка ввода. Ожидается: [x0] [h] [m]"); continue
 
             dm = DataManager(func)
             dm.generate_table(x0, h, m)
@@ -50,28 +56,44 @@ class UserInterface:
 
             main_table_data = []
             for i in range(len(dm.x_nodes)):
+                if df_h4[i] is not None:
+                    h4_val = f"{df_h4[i]:.10f}"
+                    h4_err = f"{abs(exact_df[i] - df_h4[i]):.2e}"
+                else:
+                    h4_val, h4_err = "---", "---"
+
+                if ddf_h2[i] is not None:
+                    d2_val = f"{ddf_h2[i]:.10f}"
+                    d2_err = f"{abs(exact_ddf[i] - ddf_h2[i]):.2e}"
+                else:
+                    d2_val, d2_err = "---", "---"
+
                 main_table_data.append([
-                    dm.x_nodes[i],
-                    dm.y_values[i],
-                    exact_df[i],
-                    df_h2[i],
-                    abs(exact_df[i] - df_h2[i]),
-                    df_h4[i],
-                    abs(exact_df[i] - df_h4[i]),
-                    exact_ddf[i],
-                    ddf_h2[i],
-                    abs(exact_ddf[i] - ddf_h2[i])
+                    f"{dm.x_nodes[i]:.4f}",
+                    f"{dm.y_values[i]:.10f}",
+                    f"{exact_df[i]:.10f}",
+                    f"{df_h2[i]:.10f}",
+                    f"{abs(exact_df[i] - df_h2[i]):.2e}",
+                    h4_val, h4_err,
+                    f"{exact_ddf[i]:.10f}",
+                    d2_val, d2_err
                 ])
 
-            headers = ["x", "y", "f' exact", "f' O(h2)", "Error(O(h2))", "f' O(h4)", "Error(O(h4))", "f'' exact", "f'' O(h2)", "Error(O(h2))"]
-            print("\nТаблица 1: Результаты численного дифференцирования")
-            print(tabulate(main_table_data, headers=headers, tablefmt="grid", floatfmt=".10f"))
+            headers = ["x_k", "y_k", "f'_T", "f' O(h2)", "погр. O(h2)", 
+                       "f' O(h4)", "погр. O(h4)", "f''_T", "f'' O(h2)", "погр. O(h2)"]
+            
+            print(f"\nТаблица 1: Результаты (m={m}, h={h})")
+            print(tabulate(main_table_data, headers=headers, tablefmt="fancy_grid", 
+                               floatfmt=(".6f", ".10f", ".10f", ".10f", ".10e",
+                                          ".10f", ".10e", ".10f", ".10f", ".10e")))
 
             if input("\nВыполнить подбор оптимального шага в x0? (y/n): ").lower() == 'y':
                 opt_data = nm.find_optimal_step(func, x0)
-                opt_headers = ["Шаг h", "Точная f'(x0)", "Приближ. f'(x0)", "Факт. погрешность"]
-                print("\nТаблица 2: Поиск оптимального шага")
-                print(tabulate(opt_data, headers=opt_headers, tablefmt="fancy_grid", floatfmt=(".8f", ".6f", ".6f", ".2e")))
+                opt_headers = ["Шаг h", "f'(x0)_Е", "f'(x0) O(h2)", "погр."]
+                print(tabulate(opt_data, headers=opt_headers, tablefmt="fancy_grid", 
+                               floatfmt=(".8f", ".10f", ".10f", ".2e")))
+                h = opt_data[-2][0]
+                print(f"\nОптимальный шаг {h = }")
 
-            if input("\nИзменить параметры x0, h, m для этой функции? (y/n): ").lower() != 'y':
+            if input("\nИзменить параметры для этой функции? (y/n): ").lower() != 'y':
                 break
