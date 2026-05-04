@@ -74,7 +74,18 @@ class Quadrature:
         lines.append("-" * 45)
         lines.append(f"{'k':>4} {'Узел x_k':>15} {'Коэфф. A_k':>15}")
         lines.append("-" * 45)
+        
+        sum_A = 0.0
+        sum_abs_A = 0.0
+        
         for k in range(self.N):
             lines.append(f"{k+1:>4} {self.nodes[k]:>15.8f} {self.coeffs[k]:>15.10f}")
+            sum_A += self.coeffs[k]
+            sum_abs_A += abs(self.coeffs[k])
+        
         lines.append("-" * 45)
+        lines.append(f"{'Сумма A_k:':>20} {sum_A:>15.10f}")
+        lines.append(f"{'Сумма |A_k|:':>20} {sum_abs_A:>15.10f}")
+        lines.append("-" * 45)
+        
         return "\n".join(lines)

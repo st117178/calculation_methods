@@ -125,11 +125,6 @@ class Interface:
             h = (self.b - self.a) / (self.N - 1)
             nodes = [self.a + i * h for i in range(self.N)]
         
-        print(f"\n  Сгенерированы равноотстоящие узлы (h = {h:.10f}):" if self.N > 1 else 
-            "\n  Сгенерирован узел в середине отрезка:")
-        for i, x in enumerate(nodes):
-            print(f"    x[{i+1}] = {x:.10f}")
-        
         return nodes
     
     def _build_quadrature(self, nodes: list) -> None:
@@ -163,9 +158,9 @@ class Interface:
         approx_f4 = self.quadrature.integrate(f4_func)
         diff = abs(exact_f4 - approx_f4)
         
-        print(f"    Точное значение:    {exact_f4:.15f}")
-        print(f"    Приближённое:        {approx_f4:.15f}")
-        print(f"    Разность:            {diff:.2e}")
+        print(f"    Точное значение:    {exact_f4:.16f}")
+        print(f"    Приближённое:        {approx_f4:.16f}")
+        print(f"    Разность:            {diff:.16e}")
     
     def _dialog_select_function(self) -> None:
         print("\n" + "-" * 40)
@@ -198,10 +193,10 @@ class Interface:
         rel_err = abs_err / abs(exact) if abs(exact) > 1e-15 else abs_err
         
         print(f"  Функция: {self.functions.get_name(self.selected_func_key)}")
-        print(f"  Приближённое значение: {approx:.15f}")
-        print(f"  Точное значение:       {exact:.15f}")
-        print(f"  Абсолютная погрешность: {abs_err:.2e}")
-        print(f"  Относительная погрешность: {rel_err:.2e} ({rel_err*100:.6f}%)")
+        print(f"  Приближённое значение: {approx:.16f}")
+        print(f"  Точное значение:       {exact:.16f}")
+        print(f"  Абсолютная погрешность: {abs_err:.16e}")
+        print(f"  Относительная погрешность: {rel_err:.16e}")
     
     def run(self) -> None:
         self._dialog_greeting()
@@ -242,7 +237,7 @@ class Interface:
                 self._dialog_interval()
                 if self.moments:
                     self.moments.clear_cache()
-                print("\n  [!] Требуется ввести новые узлы для новых границ.")
+                print("\n  Требуется ввести новые узлы для новых границ.")
                 self._dialog_nodes()
                 self._dialog_select_function()
                 self._dialog_compute()
