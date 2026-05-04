@@ -1,4 +1,4 @@
-from typing import List, Tuple, Dict, TypedDict
+from typing import List, TypedDict
 from tabulate import tabulate
 
 class FunctionTable(TypedDict):
@@ -45,8 +45,8 @@ class Interpolation:
             sum_coefficients += Li_x
             lebesgue_value += abs(Li_x)
 
-        print(f"\nСумма коэффициентов Лагранжа: {sum_coefficients:.12f}")
-        print(f"Значение функции Лебега в точке x: {lebesgue_value:.12f}")
+        print(f"\nСумма коэффициентов Лагранжа: {sum_coefficients:.16f}")
+        print(f"Значение функции Лебега в точке x: {lebesgue_value:.16f}")
 
         return Pn_x
     
@@ -70,7 +70,7 @@ class Interpolation:
         coefficients = [level[0] for level in res_diffs]
         print("\nРазделенные разности (коэффициенты многочлена Ньютона):")
         for i, coef in enumerate(coefficients):
-            print(f"f(x0...x{i}) = {coef:.12f}")
+            print(f"f(x0...x{i}) = {coef:.16f}")
             
         pn_x = coefficients[0]
         product_term = 1

@@ -14,7 +14,7 @@ def root_sep():
         except:
             print("Введенные значения не корректны. Убедитесь, что A, B число.")
 
-    segments = []
+    
     while True:
         try:
             N = int(round(float(input("Введите значение N >= 2: "))))
@@ -23,7 +23,7 @@ def root_sep():
                 continue
         except:
             print("Введенные значения не корректны. Убедитесь, что N число.")
-    
+        segments = []
         H = (B - A) / N
 
         x1 = A
@@ -52,7 +52,7 @@ def root_sep():
     return segments
 
 
-def claryfying_roots(segments: list, list_func=None):
+def claryfying_roots(segments: list, is_list_func=None):
     while True:
         i = 0
         while True:
@@ -78,7 +78,7 @@ def claryfying_roots(segments: list, list_func=None):
             except:
                 print(f"Введенное значение не корректно. Убедитесь, что {E = } число.")
         
-        if list_func is None:
+        if is_list_func is None:
             list_func = [bis_method, newton_method, mod_newton_method, secant_method]
             data = printer_methods(list_func, E, segments[i], True)
         else:
@@ -370,7 +370,7 @@ def ball_task():
                 results,
                 headers="keys",
                 tablefmt="grid",
-                floatfmt=(".2f", ".2f", ".16f", "d"),
+                floatfmt=(".2f", ".2f", ".3f", "d"),
                 missingval="—"
             ))
             

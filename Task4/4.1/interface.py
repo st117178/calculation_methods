@@ -85,7 +85,28 @@ class Interface:
         
         self.N = self._input_int("  Количество узлов N = ", min_val=1)
         
-        print(f"  Введите {self.N} узлов:")
+        print("\n  Способ задания узлов:")
+        print("    1.Ввести вручную")
+        print("    2.Сгенерировать равноотстоящие на [{}, {}]".format(self.a, self.b))
+        
+        choice = self._input_choice("(1/2): ", ["1", "2"])
+        
+        if choice == "1":
+            nodes = self._input_nodes_manually()
+        else:
+            nodes = self._generate_uniform_nodes()
+
+        self.functions.register_polynomial(self.N)
+
+        print("\n  Итоговый набор узлов:")
+        for i, x in enumerate(nodes):
+            print(f"    x[{i+1}] = {x:.10f}")
+
+        self._build_quadrature(nodes)
+
+
+    def _input_nodes_manually(self) -> list:
+        print(f"\n  Введите {self.N} узлов:")
         nodes = []
         for i in range(self.N):
             while True:
@@ -93,11 +114,23 @@ class Interface:
                 if x not in nodes:
                     nodes.append(x)
                     break
-                print("    Узлы должны быть попарно различны. Повторите ввод.")
+                print("    [!] Узлы должны быть попарно различны. Повторите ввод.")
+        return nodes
+
+
+    def _generate_uniform_nodes(self) -> list:
+        if self.N == 1:
+            nodes = [(self.a + self.b) / 2.0]
+        else:
+            h = (self.b - self.a) / (self.N - 1)
+            nodes = [self.a + i * h for i in range(self.N)]
         
-        self.functions.register_polynomial(self.N)
+        print(f"\n  Сгенерированы равноотстоящие узлы (h = {h:.10f}):" if self.N > 1 else 
+            "\n  Сгенерирован узел в середине отрезка:")
+        for i, x in enumerate(nodes):
+            print(f"    x[{i+1}] = {x:.10f}")
         
-        self._build_quadrature(nodes)
+        return nodes
     
     def _build_quadrature(self, nodes: list) -> None:
         print("\n" + "-" * 40)

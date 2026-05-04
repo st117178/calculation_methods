@@ -57,25 +57,25 @@ class UserInterface:
             main_table_data = []
             for i in range(len(dm.x_nodes)):
                 if df_h4[i] is not None:
-                    h4_val = f"{df_h4[i]:.10f}"
-                    h4_err = f"{abs(exact_df[i] - df_h4[i]):.2e}"
+                    h4_val = f"{df_h4[i]}"
+                    h4_err = f"{abs(exact_df[i] - df_h4[i])}"
                 else:
                     h4_val, h4_err = "---", "---"
 
                 if ddf_h2[i] is not None:
-                    d2_val = f"{ddf_h2[i]:.10f}"
-                    d2_err = f"{abs(exact_ddf[i] - ddf_h2[i]):.2e}"
+                    d2_val = f"{ddf_h2[i]}"
+                    d2_err = f"{abs(exact_ddf[i] - ddf_h2[i])}"
                 else:
                     d2_val, d2_err = "---", "---"
 
                 main_table_data.append([
-                    f"{dm.x_nodes[i]:.4f}",
-                    f"{dm.y_values[i]:.10f}",
-                    f"{exact_df[i]:.10f}",
-                    f"{df_h2[i]:.10f}",
-                    f"{abs(exact_df[i] - df_h2[i]):.2e}",
+                    f"{dm.x_nodes[i]}",
+                    f"{dm.y_values[i]}",
+                    f"{exact_df[i]}",
+                    f"{df_h2[i]}",
+                    f"{abs(exact_df[i] - df_h2[i])}",
                     h4_val, h4_err,
-                    f"{exact_ddf[i]:.10f}",
+                    f"{exact_ddf[i]}",
                     d2_val, d2_err
                 ])
 
@@ -84,16 +84,8 @@ class UserInterface:
             
             print(f"\nТаблица 1: Результаты (m={m}, h={h})")
             print(tabulate(main_table_data, headers=headers, tablefmt="fancy_grid", 
-                               floatfmt=(".6f", ".10f", ".10f", ".10f", ".10e",
-                                          ".10f", ".10e", ".10f", ".10f", ".10e")))
-
-            if input("\nВыполнить подбор оптимального шага в x0? (y/n): ").lower() == 'y':
-                opt_data = nm.find_optimal_step(func, x0)
-                opt_headers = ["Шаг h", "f'(x0)_Е", "f'(x0) O(h2)", "погр."]
-                print(tabulate(opt_data, headers=opt_headers, tablefmt="fancy_grid", 
-                               floatfmt=(".8f", ".10f", ".10f", ".2e")))
-                h = opt_data[-2][0]
-                print(f"\nОптимальный шаг {h = }")
+                               floatfmt=(".6f", ".10f", ".10f", ".16f", ".10e",
+                                          ".16f", ".10e", ".10f", ".16f", ".10e")))
 
             if input("\nИзменить параметры для этой функции? (y/n): ").lower() != 'y':
                 break

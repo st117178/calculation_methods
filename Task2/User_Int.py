@@ -103,10 +103,10 @@ class UserInterface:
             e_newton = interp.error(f_x=f_actual, Pn_x=p_newton)
 
             print(f"\nРезультаты вычислений для x = {x}:")
-            print(f"Значение функции f(x): {f_actual:.12f}")
+            print(f"Значение функции f(x): {f_actual:.16f}")
             print(f"{'Метод':<15} | {'Значение Pn(x)':<18} | {'Абс. погрешность':<18}")
-            print(f"{'Лагранж':<15} | {p_lagrange:<18.12f} | {e_lagrange:<18.12e}")
-            print(f"{'Ньютон':<15} | {p_newton:<18.12f} | {e_newton:<18.12e}")
+            print(f"{'Лагранж':<15} | {p_lagrange:<18.16f} | {e_lagrange:<18.16e}")
+            print(f"{'Ньютон':<15} | {p_newton:<18.16f} | {e_newton:<18.16e}")
 
             choice = input("\nПродолжить работу с текущей таблицей? (y/n): ").lower().strip()
             if choice != 'y':
