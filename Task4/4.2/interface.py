@@ -5,12 +5,15 @@ from right_rectangle import RightRectangle
 from middle_rectangle import MiddleRectangle
 from trapezoid import Trapezoid
 from simpson import Simpson
+from theoretical_errors import TheoreticalErrors
+from tabulate import tabulate
 
 class Interface:
     def __init__(self):
         self.functions = None
         self.integrals = None
         self.quadratures = []
+        self.theoretical_errors = None
 
         self.a = 0.0
         self.b = 1.0
@@ -69,6 +72,8 @@ class Interface:
         self.integrals = Integrals(self.a, self.b)
         self.integrals.compute_all()
 
+        self.theoretical_errors = TheoreticalErrors(self.a, self.b)
+
     def _dialog_select_function(self) -> None:
         print("\n" + "-" * 40)
         print("  Выбор функции для интегрирования")
@@ -94,18 +99,35 @@ class Interface:
         exact = self.integrals.get_exact(self.selected_func_key)
 
         print(f"  Функция: {self.functions.get_name(self.selected_func_key)}")
-        print(f"  Точное значение интеграла: {exact:.17f}")
-        print("\n" + "-" * 60)
+        print(f"  Точное значение интеграла J = {exact}")
 
-        for qf in self.quadratures:
+        table_data = []
+        headers = ["Название КФ", "J(h)", "|J - J(h)|", "|J - J(h)|/|J|", "Теор. погр."]
+
+        error_methods = [
+            self.theoretical_errors.left_rectangle,
+            self.theoretical_errors.right_rectangle,
+            self.theoretical_errors.middle_rectangle,
+            self.theoretical_errors.trapezoid,
+            self.theoretical_errors.simpson
+        ]
+
+        for qf, error_method in zip(self.quadratures, error_methods):
             approx = qf.integrate(func)
             abs_err = abs(exact - approx)
+            rel_err = abs_err / abs(exact) if abs(exact) > 1e-15 else abs_err
+            theor_err = error_method(self.selected_func_key)
 
-            print(f"\n  {qf.get_name()}")
-            print(f"    Приближенное значение: {approx:.17f}")
-            print(f"    Абсолютная погрешность: {abs_err:.17e}")
+            table_data.append([
+                qf.get_name(),
+                approx,
+                abs_err,
+                rel_err,
+                theor_err
+            ])
 
-        print("-" * 60)
+        print("\n" + tabulate(table_data, headers=headers, tablefmt="grid",
+                              floatfmt=(".17f", ".17f", ".17e", ".17e", ".17e")))
 
     def _show_menu(self) -> str:
         print("\n" + "=" * 60)
